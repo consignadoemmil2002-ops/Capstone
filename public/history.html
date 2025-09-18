@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transaction History</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f2f7ff; padding: 20px; }
+
+    h2 { margin-bottom: 20px; color: #1f4cb2; }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid #ddd; font-size: 14px; text-align: left; }
+    th { background: #f0f4ff; }
+    tr:hover { background: #f9fbff; }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .pending { background: #fff3cd; color: #856404; }
+    .accepted { background: #cce5ff; color: #004085; }
+    .ready-for-pickup { background: #d1ecf1; color: #0c5460; }
+    .completed { background: #d4edda; color: #155724; }
+    .rejected { background: #f8d7da; color: #721c24; }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 15px;
+      padding: 8px 16px;
+      background: #1f4cb2;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    .back-btn:hover { opacity: 0.85; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+    .tab-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #e0e7ff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .tab-btn.active { background: #1f4cb2; color: #fff; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <a href="superadmin.html" class="back-btn">← Back to Dashboard</a>
+  <h2>📜 Transaction History</h2>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="water">💧 Water Station</button>
+    <button class="tab-btn" data-tab="laundry">🧺 Laundry Station</button>
+  </div>
+
+  <!-- Water Orders -->
+  <div class="tab-content active" id="water">
+    <div class="card">
+      <h3>💧 Water Station Archived Orders</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th><th>Customer</th><th>Service</th>
+            <th>Quantity</th><th>Total (₱)</th><th>Date/Time</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="waterHistory"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Laundry Orders -->
+  <div class="tab-content" id="laundry">
+    <div class="card">
+      <h3>🧺 Laundry Station Archived Orders</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th><th>Customer</th><th>Service</th>
+            <th>Quantity</th><th>Total (₱)</th><th>Date/Time</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="laundryHistory"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function loadHistory() {
+      try {
+        const res = await fetch('/orders/history');
+        const orders = await res.json();
+
+        const waterBody = document.getElementById('waterHistory');
+        const laundryBody = document.getElementById('laundryHistory');
+        waterBody.innerHTML = '';
+        laundryBody.innerHTML = '';
+
+        if (!orders.length) {
+          waterBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#777;">No archived water orders.</td></tr>`;
+          laundryBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#777;">No archived laundry orders.</td></tr>`;
+          return;
+        }
+
+        orders.forEach(order => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${order._id.slice(-5).toUpperCase()}</td>
+            <td>${order.customer}</td>
+            <td>${order.service}</td>
+            <td>${order.quantity}</td>
+            <td>₱${order.total}</td>
+            <td>${new Date(order.createdAt).toLocaleString()}</td>
+            <td><span class="status ${order.status.toLowerCase().replace(/\s+/g,"-")}">${order.status}</span></td>
+          `;
+
+          if (order.service.toLowerCase().includes("water")) {
+            waterBody.appendChild(tr);
+          } else {
+            laundryBody.appendChild(tr);
+          }
+        });
+      } catch (err) {
+        console.error('❌ Failed to load history', err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHistory();
+
+      // Tab switching
+      const tabs = document.querySelectorAll('.tab-btn');
+      const contents = document.querySelectorAll('.tab-content');
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          contents.forEach(c => c.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

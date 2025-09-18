@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Super Admin Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f2f7ff; }
+
+    /* HEADER */
+    .header {
+      background-color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ccc;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    .menu-icon { font-size: 26px; cursor: pointer; color: #1f4cb2; padding: 4px 10px; border-radius: 6px; transition: background 0.2s ease; }
+    .menu-icon:hover { background: #e6ecff; }
+    .logo { font-weight: bold; font-size: 20px; color: #1f4cb2; }
+
+    /* DRAWER */
+    .drawer { position: fixed; top: 0; left: -250px; width: 250px; height: 100%; background-color: #1f4cb2; color: white; padding: 20px; transition: left 0.3s ease; z-index: 1000; }
+    .drawer.open { left: 0; }
+    .drawer a { display: block; color: white; text-decoration: none; padding: 10px 0; }
+    .drawer a:hover { background-color: #14348a; }
+
+    .overlay { position: fixed; top: 0; left: 0; height: 100vh; width: 100vw; background-color: rgba(0,0,0,0.4); z-index: 999; display: none; }
+    .overlay.show { display: block; }
+
+    /* MAIN */
+    .main { padding: 20px; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+    .tab-btn { padding: 8px 16px; border: none; border-radius: 6px; background: #e0e7ff; cursor: pointer; font-weight: bold; }
+    .tab-btn.active { background: #1f4cb2; color: #fff; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* TABLE */
+    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid #ddd; text-align: left; font-size: 14px; }
+    th { background: #f0f4ff; }
+
+    .status { padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+    .status.pending { background: #fff3cd; color: #856404; }
+    .status.accepted { background: #cce5ff; color: #004085; }
+    .status.ready-for-pickup { background: #d1ecf1; color: #0c5460; }
+    .status.on-delivery { background: #ffeeba; color: #856404; }
+    .status.completed { background: #d4edda; color: #155724; }
+    .status.rejected { background: #f8d7da; color: #721c24; }
+
+    .action-btn { padding: 4px 8px; margin: 2px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold; }
+    .accept { background: #007bff; color: #fff; }
+    .ready { background: #17a2b8; color: #fff; }
+    .delivery { background: #ff9800; color: #fff; }
+    .complete { background: #28a745; color: #fff; }
+    .reject { background: #dc3545; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
+
+  <!-- Drawer -->
+  <div class="drawer" id="drawer">
+    <h2>Kaylyz & Mikaye</h2>
+    <a href="#" class="active">📊 Dashboard</a>
+    <a href="history.html">📜 History</a>
+    <a href="#">📋 Inventory</a>
+    <a href="index.html" onclick="localStorage.removeItem('customerName')">🚪 Logout</a>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="menu-icon" onclick="toggleDrawer()">☰</div>
+    <div class="logo">Super Admin</div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="water">💧 Water Station</button>
+      <button class="tab-btn" data-tab="laundry">🧺 Laundry Station</button>
+    </div>
+
+    <!-- Water Orders -->
+    <div class="tab-content active" id="water">
+      <div class="card">
+        <h3>💧 Water Station Orders</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th><th>Customer</th><th>Service</th><th>Quantity</th>
+              <th>Total (₱)</th><th>Address</th><th>Notes</th>
+              <th>Date/Time</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="waterOrders"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Laundry Orders -->
+    <div class="tab-content" id="laundry">
+      <div class="card">
+        <h3>🧺 Laundry Station Orders</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th><th>Customer</th><th>Service</th><th>Quantity</th>
+              <th>Total (₱)</th><th>Address</th><th>Notes</th>
+              <th>Date/Time</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="laundryOrders"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  function toggleDrawer() {
+    document.getElementById('drawer').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
+  }
+
+  // ✅ TAB SWITCHING
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    loadOrders();
+    setInterval(loadOrders, 10000);
+  });
+
+  async function loadOrders() {
+    const res = await fetch('/orders');
+    const orders = await res.json();
+    const waterBody = document.getElementById('waterOrders');
+    const laundryBody = document.getElementById('laundryOrders');
+    waterBody.innerHTML = '';
+    laundryBody.innerHTML = '';
+
+    orders.forEach(order => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${order._id.slice(-5).toUpperCase()}</td>
+        <td>${order.customer}</td>
+        <td>${order.service}</td>
+        <td>${order.quantity}</td>
+        <td>₱${order.total}</td>
+        <td>${order.address || '-'}</td>
+        <td>${order.notes || '-'}</td>
+        <td>${new Date(order.createdAt).toLocaleString()}</td>
+        <td><span class="status ${order.status.toLowerCase().replace(/ /g,'-')}">${order.status}</span></td>
+        <td>
+          ${order.status === "Pending" ? `<button class="action-btn accept" onclick="updateOrder('${order._id}','Accepted')">Accept</button>` : ""}
+          ${order.status === "Accepted" && order.quantity.includes("Delivery") ? `<button class="action-btn delivery" onclick="updateOrder('${order._id}','On Delivery')">On Delivery</button>` : ""}
+          ${order.status === "Accepted" && !order.quantity.includes("Delivery") ? `<button class="action-btn ready" onclick="updateOrder('${order._id}','Ready for Pickup')">Ready</button>` : ""}
+          ${(order.status === "Ready for Pickup" || order.status === "On Delivery") ? `<button class="action-btn complete" onclick="updateOrder('${order._id}','Completed')">Complete</button>` : ""}
+          ${order.status !== "Completed" ? `<button class="action-btn reject" onclick="updateOrder('${order._id}','Rejected')">Reject</button>` : ""}
+        </td>
+      `;
+
+      if (order.service.toLowerCase().includes("water")) {
+        waterBody.appendChild(tr);
+      } else {
+        laundryBody.appendChild(tr);
+      }
+    });
+  }
+
+  async function updateOrder(id, status) {
+    let res;
+    if (status === "Rejected") {
+      res = await fetch(`/orders/${id}`, { method: "DELETE" });
+    } else {
+      res = await fetch(`/orders/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+    }
+    const data = await res.json();
+    alert(data.message || "✅ Updated!");
+    loadOrders();
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kaylyz & Mikaye Services</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: url('') no-repeat center center;
+      background-size: cover;
+      padding: 0;
+    }
+
+    /* HEADER */
+    .header {
+      background-color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ccc;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .menu-icon {
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+      color: #1f4cb2;
+    }
+
+    /* DRAWER */
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #1f4cb2;
+      color: white;
+      padding: 20px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+    }
+
+    .drawer.open {
+      left: 0;
+    }
+
+    .drawer h3 {
+      margin-bottom: 20px;
+    }
+
+    .drawer a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px 0;
+    }
+
+    .drawer a:hover {
+      background-color: #14348a;
+    }
+
+    /* OVERLAY */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 999;
+      display: none;
+    }
+
+    .overlay.show {
+      display: block;
+    }
+
+    /* CONTENT */
+    .container {
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 20px auto;
+      border-radius: 10px;
+      margin-top: 100px;
+    }
+
+    .categories-label {
+      font-size: 14px;
+      color: #444;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .split-box {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .box {
+      flex: 1 1 48%;
+      padding: 20px;
+      border-right: 1px solid #ccc;
+    }
+
+    .box:last-child {
+      border-right: none;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .water {
+      color: #1f4cb2;
+    }
+
+    .water .water-word {
+      font-size: 60px;
+      font-weight: 900;
+      color: #2f7df2;
+      margin-top: 5px;
+    }
+
+    .water .subtitle {
+      font-size: 20px;
+      color: #8bd1f2;
+    }
+
+    .laundry {
+      color: black;
+    }
+
+    .laundry .laundry-title {
+      font-size: 50px;
+      font-weight: 900;
+    }
+
+    .laundry .subtitle {
+      margin-top: 5px;
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+
+    .btn {
+      margin-top: 20px;
+      display: inline-block;
+      background-color: #002b80;
+      color: white;
+      padding: 10px 25px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .btn.dark {
+      background-color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .split-box {
+        flex-direction: column;
+      }
+
+      .box {
+        border-right: none;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .box:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
+
+  <!-- Drawer -->
+  <div class="drawer" id="drawer">
+    <h3>Menu</h3>
+    <a href="profile.html">Profile</a>
+    <a href="#">Transaction</a>
+    <a href="#">Transaction History</a>
+    <a href="about.html">About</a>
+    <a href="Notif">Notification</a>
+    <a href="settings.html">Settings</a>
+    <a href="index.html">Logout</a>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="menu-icon" onclick="toggleDrawer()">☰</div>
+    <div class="logo">Kaylyz & Mikaye</div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="categories-label">CATEGORIES</div>
+    <div class="split-box">
+      <!-- WATER BOX -->
+      <div class="box water">
+        <div class="title">Kaylyz’s</div>
+        <div class="water-word">WATER</div>
+        <div class="subtitle">Refilling services</div>
+        <a href="water.html" class="btn">View More</a>
+      </div>
+
+      <!-- LAUNDRY BOX -->
+      <div class="box laundry">
+        <div class="laundry-title">MIKAYE’S<br>LAUNDRY</div>
+        <div class="subtitle">SERVICES</div>
+        <a href="laundry.html" class="btn dark">View More</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    function toggleDrawer() {
+      const drawer = document.getElementById('drawer');
+      const overlay = document.getElementById('overlay');
+      drawer.classList.toggle('open');
+      overlay.classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

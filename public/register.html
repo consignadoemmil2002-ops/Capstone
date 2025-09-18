@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration</title>
+
+  <!-- icons (kept exactly as you want) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+  <style>
+    body {
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Segoe UI', sans-serif;
+      background: #e6f4ff; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%; 
+      max-width: 350px; 
+      background-color: #b3e0f2; 
+      padding: 30px 25px;
+      border-radius: 16px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    h2 { 
+      text-align: center; 
+      font-size: 24px; 
+      font-weight: bold; 
+      margin-bottom: 25px; 
+    }
+    .input-group { 
+      position: relative; 
+      margin-bottom: 15px;
+     }
+    .input-group input {
+      width: 75%; 
+      padding: 10px 38px 10px 38px; 
+      border: 2px solid black; 
+      border-radius: 25px; 
+      font-size: 14px; 
+      outline: none; 
+      background: #fff;
+    }
+    .input-group i, .input-group .toggle-password {
+      position: absolute; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      font-size: 18px; 
+      color: #333; 
+      user-select: none;
+    }
+    .input-group i { 
+      left: 12px;
+     }
+    .toggle-password { 
+      right: 12px; 
+      cursor: pointer;
+     }
+
+    .btn { 
+      width: 100%; 
+      padding: 10px; 
+      border: none; 
+      border-radius: 25px; 
+      background: #002a5c; 
+      color: #fff; 
+      font-size: 14px; 
+      margin-top: 10px; 
+      cursor: pointer; 
+    }
+    .btn:hover { 
+      background: #001f40;
+     }
+
+    .login-link { 
+      text-align: center; 
+      margin-top: 10px; 
+      font-size: 13px; 
+    }
+    .login-link a { 
+      color: purple; 
+      text-decoration: none;
+     }
+    .login-link a:hover { 
+      text-decoration: underline; 
+    }
+
+    .terms { 
+      margin-top: 10px; 
+      font-size: 12px; 
+      text-align: center;
+     }
+    .terms input { 
+      margin-right: 5px; 
+      vertical-align: middle; 
+    }
+    .terms label { 
+      cursor: pointer; 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registration</h2>
+
+    <!-- IMPORTANT: id must be registrationForm (used by register.js) -->
+    <form id="registrationForm" autocomplete="on" novalidate>
+      <div class="input-group">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" maxlength="40">
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-at"></i>
+        <input type="email" id="email" name="email" placeholder="Email" required autocomplete="email" inputmode="email" maxlength="80">
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-id-card"></i>
+        <input type="text" id="fullname" name="fullname" placeholder="Fullname" required autocomplete="name" maxlength="80">
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-location-dot"></i>
+        <input type="text" id="address" name="address" placeholder="Complete Address" required autocomplete="street-address" maxlength="120">
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="password" name="password" placeholder="Password" required autocomplete="new-password" minlength="6" maxlength="72">
+        <span class="toggle-password" data-target="password">👁️</span>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password" minlength="6" maxlength="72">
+        <span class="toggle-password" data-target="confirmPassword">👁️</span>
+      </div>
+
+      <button class="btn" type="submit">Create Account</button>
+    </form>
+
+    <div class="login-link">
+      <a href="index.html">Already have an account</a>
+    </div>
+
+    <div class="terms">
+      <label>
+        <input type="checkbox" id="terms" required> Terms & Condition
+      </label>
+    </div>
+  </div>
+
+  <!-- your updated register.js handles the submit -->
+  <script src="register.js"></script>
+
+  <!-- password eye toggles (kept your icons) -->
+  <script>
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-target');
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+      });
+    });
+  </script>
+</body>
+</html>
